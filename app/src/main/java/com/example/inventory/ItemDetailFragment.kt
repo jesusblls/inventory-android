@@ -25,7 +25,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.inventory.data.Item
-import com.example.inventory.data.getFormattedPrice
 import com.example.inventory.databinding.FragmentItemDetailBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -59,11 +58,11 @@ class ItemDetailFragment : Fragment() {
      */
     private fun bind(item: Item) {
         binding.apply {
-            itemName.text = item.itemName
-            itemPrice.text = item.getFormattedPrice()
-            itemCount.text = item.quantityInStock.toString()
-            sellItem.isEnabled = viewModel.isStockAvailable(item)
-            sellItem.setOnClickListener { viewModel.sellItem(item) }
+            itemName.text = item.itemModelo
+            itemPrice.text = item.itemNumeroSerie
+            itemCount.text = item.itemMarca
+            //sellItem.isEnabled = viewModel.isStockAvailable(item)
+            //sellItem.setOnClickListener { viewModel.sellItem(item) }
             deleteItem.setOnClickListener { showConfirmationDialog() }
             editItem.setOnClickListener { editItem() }
         }
@@ -85,7 +84,7 @@ class ItemDetailFragment : Fragment() {
      */
     private fun showConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(android.R.string.dialog_alert_title))
+            .setTitle("Atención")
             .setMessage(getString(R.string.delete_question))
             .setCancelable(false)
             .setNegativeButton(getString(R.string.no)) { _, _ -> }

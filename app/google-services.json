@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "987510565301",
+    "project_id": "vanitat",
+    "storage_bucket": "vanitat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987510565301:android:e8820aac225445e37c91fc",
+        "android_client_info": {
+          "package_name": "com.example.inventory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX3dYvQKKSpcuY45qrSCC0eHsz_b5VmHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

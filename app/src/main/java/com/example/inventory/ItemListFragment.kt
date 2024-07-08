@@ -72,5 +72,10 @@ class ItemListFragment : Fragment() {
             )
             this.findNavController().navigate(action)
         }
+
+        // Manejar el evento de clic en el CheckBox del encabezado
+        binding.itemCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            adapter.selectAll(isChecked)
+        }
     }
 }

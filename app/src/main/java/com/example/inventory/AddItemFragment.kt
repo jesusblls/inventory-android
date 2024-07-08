@@ -76,11 +76,10 @@ class AddItemFragment : Fragment() {
      * Binds views with the passed in [item] information.
      */
     private fun bind(item: Item) {
-        val price = "%.2f".format(item.itemPrice)
         binding.apply {
-            itemName.setText(item.itemName, TextView.BufferType.SPANNABLE)
-            itemPrice.setText(price, TextView.BufferType.SPANNABLE)
-            itemCount.setText(item.quantityInStock.toString(), TextView.BufferType.SPANNABLE)
+            itemName.setText(item.itemModelo, TextView.BufferType.SPANNABLE)
+            itemPrice.setText(item.itemNumeroSerie, TextView.BufferType.SPANNABLE)
+            itemCount.setText(item.itemMarca, TextView.BufferType.SPANNABLE)
             saveAction.setOnClickListener { updateItem() }
         }
     }

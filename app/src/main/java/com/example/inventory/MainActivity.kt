@@ -20,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.initialize
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 

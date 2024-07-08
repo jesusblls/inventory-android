@@ -14,24 +14,24 @@
   ~ limitations under the License.
   -->
 <resources>
-    <string name="app_name">Inventory</string>
-    <string name="sell">Sell</string>
-    <string name="quantity">Quantity in Stock:</string>
-    <string name="quantity_req">Quantity in Stock <font color='#FF0000'>*</font></string>
-    <string name="item_name_req">Item Name <font color='#FF0000'>*</font></string>
-    <string name="item_price_req">Item Price <font color='#FF0000'>*</font></string>
-    <string name="save_action">Save</string>
-    <string name="item_detail_fragment_title">Item Details</string>
-    <string name="add_fragment_title">Add Item</string>
-    <string name="edit_fragment_title">Edit Item</string>
-    <string name="price">Price</string>
-    <string name="quantity_in_stock">Quantity\nIn Stock</string>
-    <string name="item">Item</string>
-    <string name="delete">Delete</string>
-    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="app_name">Inventario</string>
+    <string name="sell">Vender</string>
+    <string name="quantity">Marca:</string>
+    <string name="quantity_req">Marca <font color='#FF0000'>*</font></string>
+    <string name="item_name_req">Modelo de laptop <font color='#FF0000'>*</font></string>
+    <string name="item_price_req">Numero de serie <font color='#FF0000'>*</font></string>
+    <string name="save_action">Guardar</string>
+    <string name="item_detail_fragment_title">Detalles del producto</string>
+    <string name="add_fragment_title">Añadir producto</string>
+    <string name="edit_fragment_title">Editar producto</string>
+    <string name="price">Numero de serie</string>
+    <string name="quantity_in_stock">Marca</string>
+    <string name="item">Modelo</string>
+    <string name="delete">Marcar salida</string>
+    <string name="delete_question">¿Estás seguro que quieres marcar salida?</string>
     <string name="no">No</string>
-    <string name="yes">Yes</string>
+    <string name="yes">Sí</string>
     <string name="currency_symbol">$</string>
-    <string name="edit_item">Edit Item</string>
-    <string name="add_new_item">Add new item</string>
+    <string name="edit_item">Editar Producto</string>
+    <string name="add_new_item">Agregar nuevo producto</string>
 </resources>

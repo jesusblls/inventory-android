@@ -19,24 +19,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/margin"
     tools:context=".ItemListFragment">
+
+    <CheckBox
+        android:id="@+id/item_checkbox"
+        style="@style/Widget.Inventory.Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/item_name"
+        app:layout_constraintBottom_toBottomOf="@+id/item_name" />
 
     <TextView
         android:id="@+id/item_name"
         style="@style/Widget.Inventory.Header"
-        android:layout_marginStart="@dimen/margin_between_elements"
         android:text="@string/item"
-        app:layout_constraintEnd_toStartOf="@+id/item_price"
+        app:layout_constraintStart_toEndOf="@+id/item_checkbox"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/item_price" />
 
     <TextView
         android:id="@+id/item_price"
         style="@style/Widget.Inventory.Header"
         android:layout_below="@+id/item_name"
-        android:layout_marginStart="@dimen/margin_between_elements"
+
         android:text="@string/price"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/item_quantity"
@@ -48,7 +55,7 @@
         android:id="@+id/item_quantity"
         style="@style/Widget.Inventory.Header"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/margin_between_elements"
+
         android:text="@string/quantity_in_stock"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +66,7 @@
     <View
         android:id="@+id/divider"
         style="@style/Divider"
-        android:layout_marginTop="@dimen/margin_between_elements"
+        android:layout_marginTop="19dp"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

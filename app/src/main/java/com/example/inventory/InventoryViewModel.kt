@@ -17,12 +17,15 @@
 package com.example.inventory
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemDao
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
 /**
@@ -30,15 +33,43 @@ import kotlinx.coroutines.launch
  *
  */
 class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
+    private val db = Firebase.firestore
+
+    private val _allItems = MutableLiveData<List<Item>>()
+    val allItems: LiveData<List<Item>> = _allItems
+
+    init {
+        loadItemsFromFirestore()
+    }
 
     // Cache all items form the database using LiveData.
-    val allItems: LiveData<List<Item>> = itemDao.getItems().asLiveData()
+    //val allItems: LiveData<List<Item>> = itemDao.getItems().asLiveData()
 
+    private fun loadItemsFromFirestore() {
+        db.collection("items")
+            .get()
+            .addOnSuccessListener { result ->
+                val items = mutableListOf<Item>()
+                for (document in result) {
+                    val item = Item(
+                        id = 1,
+                        itemModelo = document.data["modelo"].toString(),
+                        itemNumeroSerie = document.data["numeroSerie"].toString(),
+                        itemMarca = document.data["marca"].toString()
+                    )
+                    items.add(item)
+                }
+                _allItems.value = items
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents: $exception")
+            }
+    }
     /**
      * Returns true if stock is available to sell, false otherwise.
      */
     fun isStockAvailable(item: Item): Boolean {
-        return (item.quantityInStock > 0)
+        return true;
     }
 
     /**
@@ -46,11 +77,11 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      */
     fun updateItem(
         itemId: Int,
-        itemName: String,
-        itemPrice: String,
-        itemCount: String
+        itemModelo: String,
+        itemNumeroSerie: String,
+        itemMarca: String
     ) {
-        val updatedItem = getUpdatedItemEntry(itemId, itemName, itemPrice, itemCount)
+        val updatedItem = getUpdatedItemEntry(itemId, itemModelo, itemNumeroSerie, itemMarca)
         updateItem(updatedItem)
     }
 
@@ -68,19 +99,36 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      * Decreases the stock by one unit and updates the database.
      */
     fun sellItem(item: Item) {
-        if (item.quantityInStock > 0) {
+        //if (item.quantityInStock > 0) {
             // Decrease the quantity by 1
-            val newItem = item.copy(quantityInStock = item.quantityInStock - 1)
-            updateItem(newItem)
-        }
+          //  val newItem = item.copy(quantityInStock = item.quantityInStock - 1)
+           // updateItem(newItem)
+        //}
     }
 
     /**
      * Inserts the new Item into database.
      */
-    fun addNewItem(itemName: String, itemPrice: String, itemCount: String) {
-        val newItem = getNewItemEntry(itemName, itemPrice, itemCount)
-        insertItem(newItem)
+    fun addNewItem(itemModelo: String, itemNumeroSerie: String, itemMarca: String) {
+        //val newItem = getNewItemEntry(itemModelo, itemNumeroSerie, itemMarca)
+        //insertItem(newItem)
+
+        //usando firestore
+        val db = Firebase.firestore
+        val item = hashMapOf(
+            "modelo" to itemModelo,
+            "numeroSerie" to itemNumeroSerie,
+            "marca" to itemMarca
+        )
+
+        db.collection("items")
+            .add(item)
+            .addOnSuccessListener { documentReference ->
+                println("DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                println("Error adding document: $e")
+            }
     }
 
     /**
@@ -111,8 +159,8 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
     /**
      * Returns true if the EditTexts are not empty
      */
-    fun isEntryValid(itemName: String, itemPrice: String, itemCount: String): Boolean {
-        if (itemName.isBlank() || itemPrice.isBlank() || itemCount.isBlank()) {
+    fun isEntryValid(itemModelo: String, itemNumeroSerie: String, itemMarca: String): Boolean {
+        if (itemModelo.isBlank() || itemNumeroSerie.isBlank() || itemMarca.isBlank()) {
             return false
         }
         return true
@@ -122,11 +170,11 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      * Returns an instance of the [Item] entity class with the item info entered by the user.
      * This will be used to add a new entry to the Inventory database.
      */
-    private fun getNewItemEntry(itemName: String, itemPrice: String, itemCount: String): Item {
+    private fun getNewItemEntry(itemModelo: String, itemNumeroSerie: String, itemMarca: String): Item {
         return Item(
-            itemName = itemName,
-            itemPrice = itemPrice.toDouble(),
-            quantityInStock = itemCount.toInt()
+            itemModelo = itemModelo,
+            itemNumeroSerie = itemNumeroSerie,
+            itemMarca = itemMarca
         )
     }
 
@@ -136,15 +184,15 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      */
     private fun getUpdatedItemEntry(
         itemId: Int,
-        itemName: String,
-        itemPrice: String,
-        itemCount: String
+        itemModelo: String,
+        itemNumeroSerie: String,
+        itemMarca: String
     ): Item {
         return Item(
             id = itemId,
-            itemName = itemName,
-            itemPrice = itemPrice.toDouble(),
-            quantityInStock = itemCount.toInt()
+            itemModelo = itemModelo,
+            itemNumeroSerie = itemNumeroSerie,
+            itemMarca = itemMarca
         )
     }
 }

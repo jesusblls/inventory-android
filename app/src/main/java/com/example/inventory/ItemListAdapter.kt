@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.inventory.data.Item
-import com.example.inventory.data.getFormattedPrice
 import com.example.inventory.databinding.ItemListItemBinding
 
 /**
@@ -30,6 +29,13 @@ import com.example.inventory.databinding.ItemListItemBinding
 
 class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
     ListAdapter<Item, ItemListAdapter.ItemViewHolder>(DiffCallback) {
+
+    private var isAllSelected = false
+
+    fun selectAll(isSelected: Boolean) {
+        isAllSelected = isSelected
+        notifyDataSetChanged() // Notifica que los datos han cambiado para refrescar la lista
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
@@ -46,16 +52,17 @@ class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
         holder.itemView.setOnClickListener {
             onItemClicked(current)
         }
-        holder.bind(current)
+        holder.bind(current, isAllSelected)
     }
 
     class ItemViewHolder(private var binding: ItemListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Item) {
-            binding.itemName.text = item.itemName
-            binding.itemPrice.text = item.getFormattedPrice()
-            binding.itemQuantity.text = item.quantityInStock.toString()
+        fun bind(item: Item, isAllSelected: Boolean) {
+            binding.itemName.text = item.itemModelo
+            binding.itemPrice.text = item.itemNumeroSerie
+            binding.itemQuantity.text = item.itemMarca
+            binding.itemCheckbox.isChecked = isAllSelected
         }
     }
 
@@ -66,7 +73,7 @@ class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
             }
 
             override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
-                return oldItem.itemName == newItem.itemName
+                return oldItem.itemModelo == newItem.itemModelo
             }
         }
     }
