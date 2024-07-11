@@ -16,10 +16,12 @@
 
 package com.example.inventory
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -97,18 +99,19 @@ class ItemDetailFragment : Fragment() {
     /**
      * Deletes the current item and navigates to the list fragment.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun deleteItem() {
-        viewModel.deleteItem(item)
+        viewModel.marcarSalida(item)
         findNavController().navigateUp()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val id = navigationArgs.itemId
+        val id = navigationArgs.itemId.toString()
         // Retrieve the item details using the itemId.
         // Attach an observer on the data (instead of polling for changes) and only update the
         // the UI when the data actually changes.
-        viewModel.retrieveItem(id).observe(this.viewLifecycleOwner) { selectedItem ->
+        viewModel.getItemFromFirestore(id).observe(this.viewLifecycleOwner) { selectedItem ->
             item = selectedItem
             bind(item)
         }

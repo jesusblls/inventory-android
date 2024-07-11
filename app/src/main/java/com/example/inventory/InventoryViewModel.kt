@@ -16,6 +16,8 @@
 
 package com.example.inventory
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,14 +47,18 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
     // Cache all items form the database using LiveData.
     //val allItems: LiveData<List<Item>> = itemDao.getItems().asLiveData()
 
-    private fun loadItemsFromFirestore() {
+    /**
+     * Obtener items que no tengan salida
+     */
+    fun loadItemsFromFirestore() {
         db.collection("items")
+            .whereEqualTo("salida", "")
             .get()
             .addOnSuccessListener { result ->
                 val items = mutableListOf<Item>()
                 for (document in result) {
                     val item = Item(
-                        id = 1,
+                        id = document.id.toString(),
                         itemModelo = document.data["modelo"].toString(),
                         itemNumeroSerie = document.data["numeroSerie"].toString(),
                         itemMarca = document.data["marca"].toString()
@@ -76,7 +82,7 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      * Updates an existing Item in the database.
      */
     fun updateItem(
-        itemId: Int,
+        itemId: String,
         itemModelo: String,
         itemNumeroSerie: String,
         itemMarca: String
@@ -105,6 +111,56 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
            // updateItem(newItem)
         //}
     }
+    /**
+     * Filters items with firestore
+     */
+    fun filterItems(query: String): LiveData<List<Item>> {
+        val filteredItems = MutableLiveData<List<Item>>()
+        val queryRef = if (query.isEmpty()) {
+            db.collection("items").whereEqualTo("salida", "")
+        } else {
+            // Ajusta esta consulta según tus necesidades específicas y los índices disponibles en Firestore
+            db.collection("items")
+                .orderBy("modelo") // Asegúrate de tener un índice para este campo si usas orderBy
+                .startAt(query)
+                .endAt(query + '\uf8ff')
+                .whereEqualTo("salida", "")
+        }
+
+        queryRef.get()
+            .addOnSuccessListener { result ->
+                val items = mutableListOf<Item>()
+                for (document in result) {
+                    val item = Item(
+                        id = document.id.toString(), // Asegúrate de que este mapeo es correcto
+                        itemModelo = document.data["modelo"].toString(),
+                        itemNumeroSerie = document.data["numeroSerie"].toString(),
+                        itemMarca = document.data["marca"].toString()
+                    )
+                    items.add(item)
+                }
+                filteredItems.postValue(items)
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents: $exception")
+            }
+        return filteredItems
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun marcarSalidaItemsSeleccionados(selectedItemIds: Set<String>) {
+        selectedItemIds.forEach { itemId ->
+            marcarSalidaConId(itemId)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun marcarSalidaConId(itemId: String) {
+        val itemRef = db.collection("items").document(itemId)
+        itemRef.update("salida", java.time.LocalDateTime.now().toString())
+            .addOnSuccessListener { println("DocumentSnapshot successfully updated!") }
+            .addOnFailureListener { e -> println("Error updating document $e") }
+    }
 
     /**
      * Inserts the new Item into database.
@@ -118,7 +174,8 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
         val item = hashMapOf(
             "modelo" to itemModelo,
             "numeroSerie" to itemNumeroSerie,
-            "marca" to itemMarca
+            "marca" to itemMarca,
+            "salida" to "",
         )
 
         db.collection("items")
@@ -150,12 +207,48 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
     }
 
     /**
+     * Marca la salida de un item en firebase con hora y fecha en dd/MM/yyyy HH:mm:ss
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun marcarSalida(item: Item) {
+        val db = Firebase.firestore
+        val itemRef = db.collection("items").document(item.id)
+
+        itemRef
+            .update("salida", java.time.LocalDateTime.now().toString())
+            .addOnSuccessListener { println("DocumentSnapshot successfully updated!") }
+            .addOnFailureListener { e -> println("Error updating document $e") }
+    }
+
+    /**
      * Retrieve an item from the repository.
      */
-    fun retrieveItem(id: Int): LiveData<Item> {
+    fun retrieveItem(id: String): LiveData<Item> {
         return itemDao.getItem(id).asLiveData()
     }
 
+    fun getItemFromFirestore(id: String): LiveData<Item> {
+        val itemLiveData = MutableLiveData<Item>()
+        db.collection("items").document(id)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val item = Item(
+                        id = document.id.toString(),
+                        itemModelo = document.data?.get("modelo").toString(),
+                        itemNumeroSerie = document.data?.get("numeroSerie").toString(),
+                        itemMarca = document.data?.get("marca").toString()
+                    )
+                    itemLiveData.postValue(item)
+                } else {
+                    println("No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                println("get failed with $exception")
+            }
+        return itemLiveData
+    }
     /**
      * Returns true if the EditTexts are not empty
      */
@@ -172,6 +265,7 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      */
     private fun getNewItemEntry(itemModelo: String, itemNumeroSerie: String, itemMarca: String): Item {
         return Item(
+            id = "",
             itemModelo = itemModelo,
             itemNumeroSerie = itemNumeroSerie,
             itemMarca = itemMarca
@@ -183,7 +277,7 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
      * Returns an instance of the [Item] entity class with the item info updated by the user.
      */
     private fun getUpdatedItemEntry(
-        itemId: Int,
+        itemId: String,
         itemModelo: String,
         itemNumeroSerie: String,
         itemMarca: String

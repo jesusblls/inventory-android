@@ -25,12 +25,15 @@ import java.text.NumberFormat
  */
 @Entity
 data class Item(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String,
     @ColumnInfo(name = "modelo")
     val itemModelo: String,
     @ColumnInfo(name = "numeroSerie")
     val itemNumeroSerie: String,
     @ColumnInfo(name = "Marca")
     val itemMarca: String,
+    //opcional no requerido
+    @ColumnInfo(name = "salida")
+    val itemSalida: String = "",
 )

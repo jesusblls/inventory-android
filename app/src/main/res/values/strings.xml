@@ -24,7 +24,7 @@
     <string name="item_detail_fragment_title">Detalles del producto</string>
     <string name="add_fragment_title">Añadir producto</string>
     <string name="edit_fragment_title">Editar producto</string>
-    <string name="price">Numero de serie</string>
+    <string name="price">No. serie</string>
     <string name="quantity_in_stock">Marca</string>
     <string name="item">Modelo</string>
     <string name="delete">Marcar salida</string>
@@ -34,4 +34,5 @@
     <string name="currency_symbol">$</string>
     <string name="edit_item">Editar Producto</string>
     <string name="add_new_item">Agregar nuevo producto</string>
+    <string name="search_hint">Buscar</string>
 </resources>

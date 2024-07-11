@@ -16,10 +16,14 @@
 
 package com.example.inventory
 
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -48,6 +52,12 @@ class ItemListFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadItemsFromFirestore()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -73,9 +83,26 @@ class ItemListFragment : Fragment() {
             this.findNavController().navigate(action)
         }
 
+        binding.searchEditText.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Filtrar la lista basada en el texto de búsqueda
+                viewModel.filterItems(s.toString()).observe(viewLifecycleOwner) { filteredItems ->
+                    adapter.submitList(filteredItems)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         // Manejar el evento de clic en el CheckBox del encabezado
         binding.itemCheckbox.setOnCheckedChangeListener { _, isChecked ->
             adapter.selectAll(isChecked)
+        }
+
+        binding.salidaButton.setOnClickListener {
+            viewModel.marcarSalidaItemsSeleccionados(adapter.selectedItems.toSet())
+            viewModel.loadItemsFromFirestore()
         }
     }
 }

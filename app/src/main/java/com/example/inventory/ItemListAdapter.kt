@@ -31,10 +31,21 @@ class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
     ListAdapter<Item, ItemListAdapter.ItemViewHolder>(DiffCallback) {
 
     private var isAllSelected = false
+    var selectedItems = mutableListOf<String>()
 
     fun selectAll(isSelected: Boolean) {
         isAllSelected = isSelected
+
+        if(isSelected){
+            currentList.forEach {
+                selectedItems.add(it.id)
+            }
+        } else {
+            selectedItems.clear()
+        }
+
         notifyDataSetChanged() // Notifica que los datos han cambiado para refrescar la lista
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -52,17 +63,26 @@ class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
         holder.itemView.setOnClickListener {
             onItemClicked(current)
         }
-        holder.bind(current, isAllSelected)
+        holder.bind(current, isAllSelected) { item, isChecked ->
+            if (isChecked) {
+                selectedItems.add(item.id)
+            } else {
+                selectedItems.remove(item.id)
+            }
+        }
     }
 
-    class ItemViewHolder(private var binding: ItemListItemBinding) :
+    class ItemViewHolder(var binding: ItemListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Item, isAllSelected: Boolean) {
+        fun bind(item: Item, isAllSelected: Boolean, onCheckboxClicked: (Item, Boolean) -> Unit) {
             binding.itemName.text = item.itemModelo
             binding.itemPrice.text = item.itemNumeroSerie
             binding.itemQuantity.text = item.itemMarca
             binding.itemCheckbox.isChecked = isAllSelected
+            binding.itemCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                onCheckboxClicked(item, isChecked)
+            }
         }
     }
 

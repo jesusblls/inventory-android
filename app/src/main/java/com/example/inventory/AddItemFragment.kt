@@ -125,8 +125,8 @@ class AddItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val id = navigationArgs.itemId
-        if (id > 0) {
-            viewModel.retrieveItem(id).observe(this.viewLifecycleOwner) { selectedItem ->
+        if (id != "") {
+            viewModel.getItemFromFirestore(id).observe(this.viewLifecycleOwner) { selectedItem ->
                 item = selectedItem
                 bind(item)
             }
