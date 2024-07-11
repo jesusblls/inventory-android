@@ -23,19 +23,44 @@
     tools:context=".ItemDetailFragment">
 
     <TextView
-        android:id="@+id/item_name"
+        android:id="@+id/item_name_label"
         style="@style/Widget.Inventory.TextView"
         android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:text="Modelo de laptop: "
+        app:layout_constraintBaseline_toBaselineOf="@+id/item_name"
+        app:layout_constraintEnd_toStartOf="@+id/item_name"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/item_name"
+        style="@style/Widget.Inventory.TextView"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/margin_between_elements"
+        android:layout_marginTop="@dimen/margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/item_name_label"
         tools:text="Screwdrivers" />
+
+    <TextView
+        android:id="@+id/item_serie_label"
+        style="@style/Widget.Inventory.TextView"
+        android:layout_width="wrap_content"
+        android:text="Numero de serie: "
+        app:layout_constraintBaseline_toBaselineOf="@+id/item_price"
+        app:layout_constraintEnd_toStartOf="@+id/item_price"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <TextView
         android:id="@+id/item_price"
         style="@style/Widget.Inventory.TextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/margin_between_elements"
         android:layout_marginTop="@dimen/margin"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/item_serie_label"
         app:layout_constraintTop_toBottomOf="@+id/item_name"
         tools:text="$5.50" />
 

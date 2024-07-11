@@ -26,7 +26,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemDao
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
@@ -112,39 +114,54 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
         //}
     }
     /**
-     * Filters items with firestore
+     * Buscar por modelo, marca y numero de serie en firebase
      */
     fun filterItems(query: String): LiveData<List<Item>> {
         val filteredItems = MutableLiveData<List<Item>>()
-        val queryRef = if (query.isEmpty()) {
-            db.collection("items").whereEqualTo("salida", "")
+
+        if (query.isEmpty()) {
+            db.collection("items").whereEqualTo("salida", "").get()
+                .addOnSuccessListener { result ->
+                    val items = result.toItems() // Suponiendo que tienes una función de extensión para convertir QuerySnapshot a List<Item>
+                    filteredItems.postValue(items)
+                }
+                .addOnFailureListener { exception ->
+                    // Maneja la excepción si ocurre
+                    filteredItems.postValue(emptyList())
+                }
         } else {
-            // Ajusta esta consulta según tus necesidades específicas y los índices disponibles en Firestore
-            db.collection("items")
-                .orderBy("modelo") // Asegúrate de tener un índice para este campo si usas orderBy
-                .startAt(query)
-                .endAt(query + '\uf8ff')
-                .whereEqualTo("salida", "")
+            val modelQuery = db.collection("items").orderBy("modelo").startAt(query).endAt(query + '\uf8ff').whereEqualTo("salida", "")
+            val brandQuery = db.collection("items").orderBy("marca").startAt(query).endAt(query + '\uf8ff').whereEqualTo("salida", "")
+            val serialQuery = db.collection("items").orderBy("numeroSerie").startAt(query).endAt(query + '\uf8ff').whereEqualTo("salida", "")
+
+            val tasks = listOf(modelQuery.get(), brandQuery.get(), serialQuery.get())
+
+            Tasks.whenAllSuccess<QuerySnapshot>(tasks)
+                .addOnSuccessListener { results ->
+                    val items = results.flatMap { it.toItems() }.distinct()
+                    filteredItems.postValue(items)
+                }
+                .addOnFailureListener { exception ->
+                    // Maneja la excepción si ocurre
+                    filteredItems.postValue(emptyList())
+                }
         }
 
-        queryRef.get()
-            .addOnSuccessListener { result ->
-                val items = mutableListOf<Item>()
-                for (document in result) {
-                    val item = Item(
-                        id = document.id.toString(), // Asegúrate de que este mapeo es correcto
-                        itemModelo = document.data["modelo"].toString(),
-                        itemNumeroSerie = document.data["numeroSerie"].toString(),
-                        itemMarca = document.data["marca"].toString()
-                    )
-                    items.add(item)
-                }
-                filteredItems.postValue(items)
-            }
-            .addOnFailureListener { exception ->
-                println("Error getting documents: $exception")
-            }
         return filteredItems
+    }
+
+    /**
+     * Convierte un QuerySnapshot en una lista de Items
+     */
+    private fun QuerySnapshot.toItems(): List<Item> {
+        return documents.map { document ->
+            Item(
+                id = document.id,
+                itemModelo = document.data?.get("modelo").toString(),
+                itemNumeroSerie = document.data?.get("numeroSerie").toString(),
+                itemMarca = document.data?.get("marca").toString()
+            )
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

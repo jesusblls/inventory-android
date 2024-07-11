@@ -58,6 +58,7 @@ class ItemDetailFragment : Fragment() {
     /**
      * Binds views with the passed in item data.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun bind(item: Item) {
         binding.apply {
             itemName.text = item.itemModelo
@@ -84,6 +85,7 @@ class ItemDetailFragment : Fragment() {
     /**
      * Displays an alert dialog to get the user's confirmation before deleting the item.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun showConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Atención")
@@ -105,6 +107,7 @@ class ItemDetailFragment : Fragment() {
         findNavController().navigateUp()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.itemId.toString()
