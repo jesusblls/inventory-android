@@ -27,7 +27,7 @@ import com.example.inventory.databinding.ItemListItemBinding
  * [ListAdapter] implementation for the recyclerview.
  */
 
-class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
+class ItemListAdapter(private val onItemClicked: (Item) -> Unit, private val isCheckboxVisible: Boolean = true) :
     ListAdapter<Item, ItemListAdapter.ItemViewHolder>(DiffCallback) {
 
     private var isAllSelected = false
@@ -63,7 +63,7 @@ class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
         holder.itemView.setOnClickListener {
             onItemClicked(current)
         }
-        holder.bind(current, isAllSelected) { item, isChecked ->
+        holder.bind(current, isAllSelected, isCheckboxVisible) { item, isChecked ->
             if (isChecked) {
                 selectedItems.add(item.id)
             } else {
@@ -75,11 +75,20 @@ class ItemListAdapter(private val onItemClicked: (Item) -> Unit) :
     class ItemViewHolder(var binding: ItemListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Item, isAllSelected: Boolean, onCheckboxClicked: (Item, Boolean) -> Unit) {
+        fun bind(item: Item, isAllSelected: Boolean, isCheckboxVisible: Boolean, onCheckboxClicked: (Item, Boolean) -> Unit) {
             binding.itemName.text = item.itemModelo
             binding.itemPrice.text = item.itemNumeroSerie
-            binding.itemQuantity.text = item.itemMarca
+            binding.itemQuantity.text = if (isCheckboxVisible) {
+                item.itemMarca
+            } else {
+                item.itemSalida
+            }
             binding.itemCheckbox.isChecked = isAllSelected
+            binding.itemCheckbox.visibility = if (isCheckboxVisible) {
+                RecyclerView.VISIBLE
+            } else {
+                RecyclerView.GONE
+            }
             binding.itemCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 onCheckboxClicked(item, isChecked)
             }

@@ -52,18 +52,25 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
     /**
      * Obtener items que no tengan salida
      */
-    fun loadItemsFromFirestore() {
-        db.collection("items")
-            .whereEqualTo("salida", "")
-            .get()
+    fun loadItemsFromFirestore(onlyWithExitDate: Boolean = false) {
+        val query = if (onlyWithExitDate) {
+            db.collection("items").whereNotEqualTo("salida", "")
+        } else {
+            db.collection("items").whereEqualTo("salida", "")
+        }
+
+        query.get()
             .addOnSuccessListener { result ->
                 val items = mutableListOf<Item>()
                 for (document in result) {
+
                     val item = Item(
                         id = document.id.toString(),
                         itemModelo = document.data["modelo"].toString(),
                         itemNumeroSerie = document.data["numeroSerie"].toString(),
-                        itemMarca = document.data["marca"].toString()
+                        itemMarca = document.data["marca"].toString(),
+                        //Fecha de salida en formato dd/mm/yyyy
+                        itemSalida = document.data["salida"].toString().split("T").firstOrNull() ?: ""
                     )
                     items.add(item)
                 }
@@ -73,6 +80,7 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
                 println("Error getting documents: $exception")
             }
     }
+
     /**
      * Returns true if stock is available to sell, false otherwise.
      */

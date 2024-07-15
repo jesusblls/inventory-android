@@ -24,6 +24,7 @@
     <string name="item_detail_fragment_title">Detalles del producto</string>
     <string name="add_fragment_title">Añadir producto</string>
     <string name="edit_fragment_title">Editar producto</string>
+    <string name="item_name">Modelo</string>
     <string name="price">No. serie</string>
     <string name="quantity_in_stock">Marca</string>
     <string name="item">Modelo</string>

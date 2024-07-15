@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_itemListFragment_to_addItemFragment"
             app:destination="@id/addItemFragment" />
+        <action
+            android:id="@+id/action_itemListFragment_to_recordListFragment"
+            app:destination="@id/recordListFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemDetailFragment"
@@ -60,5 +63,14 @@
             app:destination="@id/itemListFragment"
             app:popUpTo="@id/itemListFragment"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/recordListFragment"
+        android:name="com.example.inventory.RecordsFragment"
+        android:label="Historial de movimientos"
+        tools:layout="@layout/fragment_records">
+        <action
+            android:id="@+id/action_recordListFragment_to_itemListFragment"
+            app:destination="@id/itemListFragment" />
     </fragment>
 </navigation>

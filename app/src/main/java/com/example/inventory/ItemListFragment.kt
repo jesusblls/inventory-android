@@ -61,11 +61,11 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = ItemListAdapter {
+        val adapter = ItemListAdapter ({
             val action =
                 ItemListFragmentDirections.actionItemListFragmentToItemDetailFragment(it.id)
             this.findNavController().navigate(action)
-        }
+        }, true)
         binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
         binding.recyclerView.adapter = adapter
         // Attach an observer on the allItems list to update the UI automatically when the data
@@ -103,6 +103,11 @@ class ItemListFragment : Fragment() {
         binding.salidaButton.setOnClickListener {
             viewModel.marcarSalidaItemsSeleccionados(adapter.selectedItems.toSet())
             viewModel.loadItemsFromFirestore()
+        }
+
+        binding.ViewAllRecordsButton.setOnClickListener {
+            val action = ItemListFragmentDirections.actionItemListFragmentToRecordListFragment()
+            this.findNavController().navigate(action)
         }
     }
 }
